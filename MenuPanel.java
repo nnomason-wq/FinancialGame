@@ -1,25 +1,46 @@
 import javax.swing.*;
-import java.awt.*;
 
-public class MenuPanel extends JPanel {
+public class MenuPanel extends BackgroundPanel {
+
+    private HotspotButton startButton;
+    private HotspotButton howButton;
+    private HotspotButton exitButton;
 
     public MenuPanel() {
-        setLayout(new GridLayout(3, 1, 20, 20));
-        setBorder(BorderFactory.createEmptyBorder(50, 100, 50, 100));
+        super("start.png");
+        setLayout(null); // we position the buttons ourselves in doLayout()
 
-        JLabel title = new JLabel("Money Smart", SwingConstants.CENTER);
-        title.setFont(new Font("Arial", Font.BOLD, 40));
+        startButton = new HotspotButton();
+        startButton.addActionListener(e -> Main.showScreen("topics"));
 
-        JButton taxesButton = new JButton("Taxes");
-        taxesButton.setFont(new Font("Arial", Font.BOLD, 24));
-        taxesButton.addActionListener(e -> Main.showScreen("taxes"));
+        howButton = new HotspotButton();
+        howButton.addActionListener(e -> JOptionPane.showMessageDialog(this,
+                "1. Learn about a topic.\n"
+                + "2. Take a quick quiz.\n"
+                + "3. Make money decisions in real-life scenarios.\n"
+                + "4. See the consequences and earn points!",
+                "How to Play", JOptionPane.INFORMATION_MESSAGE));
 
-        JButton debtButton = new JButton("Debt");
-        debtButton.setFont(new Font("Arial", Font.BOLD, 24));
-        debtButton.addActionListener(e -> Main.showScreen("debt"));
+        exitButton = new HotspotButton();
+        exitButton.addActionListener(e -> System.exit(0));
 
-        add(title);
-        add(taxesButton);
-        add(debtButton);
+        add(startButton);
+        add(howButton);
+        add(exitButton);
+    }
+
+    // Swing calls this whenever the panel needs to arrange its children
+    @Override
+    public void doLayout() {
+       place(startButton, 0.307, 0.481, 0.387, 0.111);
+       place(howButton,   0.307, 0.603, 0.387, 0.105);
+       place(exitButton,  0.307, 0.716, 0.387, 0.111);
+    }
+
+    // x, y, bw, bh are fractions of the panel's width/height (0.0 to 1.0)
+    private void place(JComponent c, double x, double y, double bw, double bh) {
+        int w = getWidth();
+        int h = getHeight();
+        c.setBounds((int) (x * w), (int) (y * h), (int) (bw * w), (int) (bh * h));
     }
 }

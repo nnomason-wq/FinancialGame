@@ -7,8 +7,8 @@ public class Main {
     private static CardLayout cardLayout;
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Money Smart");
-        frame.setSize(800, 600);
+        JFrame frame = new JFrame("Financial Quest");
+        frame.setSize(960, 670);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
 
@@ -16,6 +16,7 @@ public class Main {
         screens = new JPanel(cardLayout);
 
         screens.add(new MenuPanel(), "menu");
+        screens.add(new TopicPanel(), "topics");
         screens.add(new TaxesLessonPanel(), "taxes");
         screens.add(new PlaceholderPanel("Debt"), "debt");
 

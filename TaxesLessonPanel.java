@@ -1,3 +1,4 @@
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -29,23 +30,27 @@ public class TaxesLessonPanel extends JPanel {
 
     public TaxesLessonPanel() {
         setLayout(new BorderLayout());
+        setBackground(Theme.NAVY);
 
         titleLabel = new JLabel("", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 34));
+        titleLabel.setFont(Theme.HEADING);
+        titleLabel.setForeground(Color.WHITE);
         titleLabel.setBorder(BorderFactory.createEmptyBorder(30, 0, 10, 0));
 
         textLabel = new JLabel("", SwingConstants.CENTER);
-        textLabel.setFont(new Font("Arial", Font.PLAIN, 22));
+        textLabel.setFont(Theme.BODY);
+        textLabel.setForeground(Color.WHITE);
 
         pageLabel = new JLabel("", SwingConstants.CENTER);
+        pageLabel.setForeground(Color.WHITE);
 
-        backButton = new JButton("Back");
+        backButton = new RoundedButton("Back", Theme.BLUE);
         backButton.addActionListener(e -> {
             page--;
             showPage();
         });
 
-        nextButton = new JButton("Next");
+        nextButton = new RoundedButton("Next", Theme.GREEN);
         nextButton.addActionListener(e -> {
             if (page < titles.length - 1) {
                 page++;
@@ -53,11 +58,12 @@ public class TaxesLessonPanel extends JPanel {
             } else {
                 page = 0;
                 showPage();
-                Main.showScreen("menu");
+                Main.showScreen("topics");
             }
         });
 
         JPanel bottomBar = new JPanel(new GridLayout(1, 3, 10, 10));
+        bottomBar.setOpaque(false);
         bottomBar.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
         bottomBar.add(backButton);
         bottomBar.add(pageLabel);
