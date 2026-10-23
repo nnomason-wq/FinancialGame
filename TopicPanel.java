@@ -1,32 +1,42 @@
 import javax.swing.*;
-import java.awt.*;
 
-public class TopicPanel extends JPanel {
+// Topic selection screen: ChatGPT artwork with painted buttons,
+// and invisible HotspotButtons placed on top of them
+public class TopicPanel extends BackgroundPanel {
+
+    private HotspotButton taxesButton;
+    private HotspotButton debtButton;
+    private HotspotButton backButton;
 
     public TopicPanel() {
-        setBackground(new Color(18, 32, 72));
-        setLayout(new GridLayout(4, 1, 20, 20));
-        setBorder(BorderFactory.createEmptyBorder(40, 100, 40, 100));
+        super("topics.png");
+        setLayout(null); // we position the buttons ourselves in doLayout()
 
-        JLabel title = new JLabel("Choose a Topic", SwingConstants.CENTER);
-        title.setFont(new Font("Arial", Font.BOLD, 40));
-        title.setForeground(Color.WHITE);
-
-        JButton taxesButton = new JButton("Taxes");
-        taxesButton.setFont(new Font("Arial", Font.BOLD, 24));
+        taxesButton = new HotspotButton();
         taxesButton.addActionListener(e -> Main.showScreen("taxes"));
 
-        JButton debtButton = new JButton("Debt");
-        debtButton.setFont(new Font("Arial", Font.BOLD, 24));
+        debtButton = new HotspotButton();
         debtButton.addActionListener(e -> Main.showScreen("debt"));
 
-        JButton backButton = new JButton("Back");
-        backButton.setFont(new Font("Arial", Font.BOLD, 24));
+        backButton = new HotspotButton();
         backButton.addActionListener(e -> Main.showScreen("menu"));
 
-        add(title);
         add(taxesButton);
         add(debtButton);
         add(backButton);
+    }
+
+    // Positions are fractions of the window: left edge, top edge, width, height
+    @Override
+    public void doLayout() {
+        place(taxesButton, 0.307, 0.38, 0.387, 0.13);
+        place(debtButton,  0.307, 0.54, 0.387, 0.13);
+        place(backButton,  0.307, 0.68, 0.387, 0.13);
+    }
+
+    private void place(JComponent c, double x, double y, double bw, double bh) {
+        int w = getWidth();
+        int h = getHeight();
+        c.setBounds((int) (x * w), (int) (y * h), (int) (bw * w), (int) (bh * h));
     }
 }
