@@ -17,8 +17,10 @@ public class Main {
 
         screens.add(new MenuPanel(), "menu");
         screens.add(new TopicPanel(), "topics");
-        screens.add(new LessonPanel(LessonContent.TAX_TITLES, LessonContent.TAX_TEXTS, "topics"), "taxes");
-        screens.add(new LessonPanel(LessonContent.DEBT_TITLES, LessonContent.DEBT_TEXTS, "topics"), "debt");
+        screens.add(new LessonPanel(LessonContent.TAX_TITLES, LessonContent.TAX_TEXTS, "taxQuiz"), "taxes");
+        screens.add(new LessonPanel(LessonContent.DEBT_TITLES, LessonContent.DEBT_TEXTS, "debtQuiz"), "debt");
+        screens.add(new QuizPanel(QuizContent.TAX_QUIZ, "topics"), "taxQuiz");
+        screens.add(new QuizPanel(QuizContent.DEBT_QUIZ, "topics"), "debtQuiz");
 
         frame.add(screens);
         frame.setVisible(true);
