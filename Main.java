@@ -5,6 +5,7 @@ public class Main {
 
     private static JPanel screens;
     private static CardLayout cardLayout;
+    public static Player player = new Player(); // shared by the whole game
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Financial Quest");
@@ -19,8 +20,10 @@ public class Main {
         screens.add(new TopicPanel(), "topics");
         screens.add(new LessonPanel(LessonContent.TAX_TITLES, LessonContent.TAX_TEXTS, "taxQuiz"), "taxes");
         screens.add(new LessonPanel(LessonContent.DEBT_TITLES, LessonContent.DEBT_TEXTS, "debtQuiz"), "debt");
-        screens.add(new QuizPanel(QuizContent.TAX_QUIZ, "topics"), "taxQuiz");
-        screens.add(new QuizPanel(QuizContent.DEBT_QUIZ, "topics"), "debtQuiz");
+          screens.add(new QuizPanel(QuizContent.TAX_QUIZ, "taxGame"), "taxQuiz");
+   screens.add(new QuizPanel(QuizContent.DEBT_QUIZ, "debtGame"), "debtQuiz");
+   screens.add(new GamePanel(ScenarioContent.TAX_SCENARIOS, "topics"), "taxGame");
+   screens.add(new GamePanel(ScenarioContent.DEBT_SCENARIOS, "topics"), "debtGame");
 
         frame.add(screens);
         frame.setVisible(true);

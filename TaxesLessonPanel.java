@@ -1,10 +1,11 @@
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 
-public class TaxesLessonPanel extends JPanel {
+public class TaxesLessonPanel extends BackgroundPanel {
 
-    private String[] titles = {
+    private final String[] titles = {
         "What Is a Tax?",
         "Income Tax",
         "Gross Pay vs. Net Pay",
@@ -12,7 +13,7 @@ public class TaxesLessonPanel extends JPanel {
         "Why Taxes Matter"
     };
 
-    private String[] texts = {
+    private final String[] texts = {
         "A tax is money that people and businesses must pay to the government. You don't get to choose whether to pay it, and it is usually taken as a percentage.",
         "Income tax is taken out of the money you earn. The more you earn, the more tax you pay. Most people in the U.S. pay federal income tax, and many also pay state income tax.",
         "Gross pay is what you earn BEFORE taxes. Net pay (take-home pay) is what you actually get AFTER taxes. Example: if you earn $1,000 and $150 goes to taxes, your net pay is $850.",
@@ -23,34 +24,56 @@ public class TaxesLessonPanel extends JPanel {
     private int page = 0;
 
     private JLabel titleLabel;
-    private JLabel textLabel;
+    private JTextArea textArea;
     private JLabel pageLabel;
-    private JButton backButton;
-    private JButton nextButton;
+
+    private HotspotButton backButton;
+    private HotspotButton nextButton;
 
     public TaxesLessonPanel() {
-        setLayout(new BorderLayout());
-        setBackground(Theme.NAVY);
+        super("lesson.png");
+        setLayout(null);
 
         titleLabel = new JLabel("", SwingConstants.CENTER);
-        titleLabel.setFont(Theme.HEADING);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 25));
         titleLabel.setForeground(Color.WHITE);
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(30, 0, 10, 0));
+        add(titleLabel);
 
-        textLabel = new JLabel("", SwingConstants.CENTER);
-        textLabel.setFont(Theme.BODY);
-        textLabel.setForeground(Color.WHITE);
+        // JTextArea automatically wraps long paragraphs.
+        textArea = new JTextArea();
+        textArea.setFont(new Font("Arial", Font.PLAIN, 13));
+        textArea.setForeground(Theme.NAVY);
+        textArea.setOpaque(false);
+        textArea.setEditable(false);
+        textArea.setFocusable(false);
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        textArea.setMargin(new Insets(8, 12, 8, 12));
+        add(textArea);
 
         pageLabel = new JLabel("", SwingConstants.CENTER);
+        pageLabel.setFont(new Font("Arial", Font.BOLD, 18));
         pageLabel.setForeground(Color.WHITE);
+        add(pageLabel);
 
-        backButton = new RoundedButton("Back", Theme.BLUE);
+        backButton = new HotspotButton();
+        backButton.setText("Back");
+        backButton.setFont(new Font("Arial", Font.BOLD, 19));
+        backButton.setForeground(Color.WHITE);
         backButton.addActionListener(e -> {
-            page--;
-            showPage();
+            if (page > 0) {
+                page--;
+                showPage();
+            } else {
+                Main.showScreen("topics");
+            }
         });
+        add(backButton);
 
-        nextButton = new RoundedButton("Next", Theme.GREEN);
+        nextButton = new HotspotButton();
+        nextButton.setText("Next");
+        nextButton.setFont(new Font("Arial", Font.BOLD, 19));
+        nextButton.setForeground(Color.WHITE);
         nextButton.addActionListener(e -> {
             if (page < titles.length - 1) {
                 page++;
@@ -58,36 +81,77 @@ public class TaxesLessonPanel extends JPanel {
             } else {
                 page = 0;
                 showPage();
-                Main.showScreen("topics");
+                Main.showScreen("taxesQuiz");
             }
         });
+        add(nextButton);
 
-        JPanel bottomBar = new JPanel(new GridLayout(1, 3, 10, 10));
-        bottomBar.setOpaque(false);
-        bottomBar.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
-        bottomBar.add(backButton);
-        bottomBar.add(pageLabel);
-        bottomBar.add(nextButton);
-
-        add(titleLabel, BorderLayout.NORTH);
-        add(textLabel, BorderLayout.CENTER);
-        add(bottomBar, BorderLayout.SOUTH);
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                updateLayout();
+            }
+        });
 
         showPage();
     }
 
     private void showPage() {
         titleLabel.setText(titles[page]);
-        textLabel.setText("<html><div style='width:500px; text-align:center;'>"
-                + texts[page] + "</div></html>");
-        pageLabel.setText("Page " + (page + 1) + " of " + titles.length);
+        textArea.setText(texts[page]);
+        textArea.setCaretPosition(0);
 
-        backButton.setEnabled(page > 0);
+        pageLabel.setText(
+            (page + 1) + " / " + titles.length
+        );
 
-        if (page == titles.length - 1) {
-            nextButton.setText("Finish Lesson");
-        } else {
-            nextButton.setText("Next");
-        }
+        nextButton.setText(
+            page == titles.length - 1
+                ? "Finish Lesson"
+                : "Next"
+        );
+
+        backButton.setText(
+            page == 0 ? "Back" : "Back"
+        );
+
+        revalidate();
+        repaint();
+    }
+
+    private void updateLayout() {
+        int w = getWidth();
+        int h = getHeight();
+
+        // Title ribbon
+        place(titleLabel, 0.24, 0.04, 0.52, 0.12);
+
+        // Text safely inside the cream lesson panel
+place(textArea, 0.18, 0.29, 0.58, 0.32);
+        // Bottom navigation
+        place(backButton, 0.06, 0.80, 0.22, 0.12);
+        place(pageLabel, 0.39, 0.80, 0.22, 0.12);
+        place(nextButton, 0.72, 0.80, 0.22, 0.12);
+    }
+
+    private void place(
+        JComponent component,
+        double x, double y,
+        double width, double height
+    ) {
+        int w = getWidth();
+        int h = getHeight();
+
+        component.setBounds(
+            (int) (x * w),
+            (int) (y * h),
+            (int) (width * w),
+            (int) (height * h)
+        );
+    }
+
+    @Override
+    public void doLayout() {
+        updateLayout();
     }
 }

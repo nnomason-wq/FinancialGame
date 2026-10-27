@@ -1,68 +1,70 @@
+
 import javax.swing.*;
 import java.awt.*;
 
-// One reusable quiz screen. The questions and the next screen are passed in.
 public class QuizPanel extends BackgroundPanel {
 
     private QuizQuestion[] questions;
     private String nextScreen;
-    private int current = 0;          // which question we're on (0 = first)
-    private int score = 0;            // number of correct answers
-    private boolean answered = false; // stops the player answering twice
-            for (int i = 0; i < 4; i++) {
-            answerButtons[i].setTint(null);
-        }
+    private int current = 0;
+    private int score = 0;
+    private boolean answered = false;
 
     private JLabel headerLabel;
-    private JLabel questionLabel;
+    private JTextArea questionText;
     private HotspotButton[] answerButtons = new HotspotButton[4];
     private HotspotButton continueButton;
 
     public QuizPanel(QuizQuestion[] questions, String nextScreen) {
         super("quiz.png");
+
         this.questions = questions;
         this.nextScreen = nextScreen;
         setLayout(null);
 
+        // Question number in the title ribbon
         headerLabel = new JLabel("", SwingConstants.CENTER);
-        headerLabel.setFont(Theme.HEADING);
+        headerLabel.setFont(new Font("Arial", Font.BOLD, 26));
         headerLabel.setForeground(Color.WHITE);
-
-        questionLabel = new JLabel("", SwingConstants.CENTER);
-        questionLabel.setFont(Theme.BODY);
-        questionLabel.setForeground(Theme.NAVY);
-
         add(headerLabel);
-        add(questionLabel);
 
-        // A loop builds all four answer buttons so we don't repeat code 4 times
+        // Question and feedback text
+        questionText = new JTextArea();
+        questionText.setFont(new Font("Arial", Font.PLAIN, 16));
+        questionText.setForeground(Theme.NAVY);
+        questionText.setOpaque(false);
+        questionText.setEditable(false);
+        questionText.setFocusable(false);
+        questionText.setLineWrap(true);
+        questionText.setWrapStyleWord(true);
+        questionText.setMargin(new Insets(5, 8, 5, 8));
+        add(questionText);
+
+        // Four answer buttons
         for (int i = 0; i < 4; i++) {
-            final int choice = i; // the lambda below needs its own unchanging copy of i
+            final int choice = i;
+
             answerButtons[i] = new HotspotButton();
-            answerButtons[i].setFont(new Font("Arial", Font.BOLD, 20));
+            answerButtons[i].setFont(
+                new Font("Arial", Font.BOLD, 15)
+            );
             answerButtons[i].setForeground(Color.WHITE);
-               // Called when the player clicks one of the four answers
-    private void checkAnswer(int choice) {
-        if (answered) return; // ignore extra clicks
-        answered = true;
+            answerButtons[i].setHorizontalAlignment(
+                SwingConstants.CENTER
+            );
 
-        QuizQuestion q = questions[current];
-        if (choice == q.correctIndex) {
-            score++;
-            answerButtons[choice].setTint(Theme.GREEN);      // right = green
-            setQuestionText("Correct! " + q.explanation);
-        } else {
-            answerButtons[choice].setTint(Theme.RED);        // wrong = red
-            answerButtons[q.correctIndex].setTint(Theme.GREEN); // show the right one in green
-            setQuestionText("Not quite. The answer was: " + q.options[q.correctIndex]
-                    + ". " + q.explanation);
-        }
-        continueButton.setText(current == questions.length - 1 ? "See Score" : "Continue");
-    }
+            answerButtons[i].addActionListener(
+                e -> checkAnswer(choice)
+            );
+
+            add(answerButtons[i]);
         }
 
+        // Continue button
         continueButton = new HotspotButton();
-        continueButton.setFont(Theme.BUTTON);
+        continueButton.setFont(
+            new Font("Arial", Font.BOLD, 18)
+        );
         continueButton.setForeground(Color.WHITE);
         continueButton.addActionListener(e -> goNext());
         add(continueButton);
@@ -70,72 +72,137 @@ public class QuizPanel extends BackgroundPanel {
         showQuestion();
     }
 
-    // Shows the current question and resets the buttons
     private void showQuestion() {
         QuizQuestion q = questions[current];
         answered = false;
-        headerLabel.setText("Question " + (current + 1) + " of " + questions.length);
+
+        headerLabel.setText(
+            "Question " + (current + 1)
+            + " of " + questions.length
+        );
+
         setQuestionText(q.question);
+
         for (int i = 0; i < 4; i++) {
-            answerButtons[i].setText("<html><div style='text-align:center; width:280px;'>"
-                    + q.options[i] + "</div></html>");
+            answerButtons[i].setTint(null);
+
+            // Removed fixed-width HTML
+            answerButtons[i].setText(q.options[i]);
         }
+
         continueButton.setText("");
     }
 
-    // Called when the player clicks one of the four answers
     private void checkAnswer(int choice) {
-        if (answered) return; // ignore extra clicks
+        if (answered) return;
+
         answered = true;
 
         QuizQuestion q = questions[current];
+
         if (choice == q.correctIndex) {
             score++;
-            setQuestionText("Correct! " + q.explanation);
+
+            answerButtons[choice].setTint(Theme.GREEN);
+
+            setQuestionText(
+                "Correct! " + q.explanation
+            );
+
         } else {
-            setQuestionText("Not quite. The answer was: " + q.options[q.correctIndex]
-                    + ". " + q.explanation);
+            answerButtons[choice].setTint(Theme.RED);
+
+            answerButtons[q.correctIndex].setTint(
+                Theme.GREEN
+            );
+
+            setQuestionText(
+                "Not quite. The answer was: "
+                + q.options[q.correctIndex]
+                + ". " + q.explanation
+            );
         }
-        continueButton.setText(current == questions.length - 1 ? "See Score" : "Continue");
+
+        continueButton.setText(
+            current == questions.length - 1
+                ? "See Score"
+                : "Continue"
+        );
     }
 
-    // Called when the player clicks the green button
     private void goNext() {
-        if (!answered) return; // must answer first
+        if (!answered) return;
+
         if (current < questions.length - 1) {
             current++;
             showQuestion();
         } else {
-            JOptionPane.showMessageDialog(this,
-                    "You got " + score + " out of " + questions.length + " correct!",
-                    "Quiz Complete", JOptionPane.INFORMATION_MESSAGE);
-            current = 0;   // reset so the quiz restarts next time
+            JOptionPane.showMessageDialog(
+                this,
+                "You got " + score + " out of "
+                + questions.length + " correct!",
+                "Quiz Complete",
+                JOptionPane.INFORMATION_MESSAGE
+            );
+
+            current = 0;
             score = 0;
             showQuestion();
+
             Main.showScreen(nextScreen);
         }
     }
 
     private void setQuestionText(String text) {
-        questionLabel.setText("<html><div style='text-align:center; width:560px;'>"
-                + text + "</div></html>");
+        questionText.setText(text);
+        questionText.setCaretPosition(0);
     }
 
-    // Positions are fractions of the window: left edge, top edge, width, height
-       @Override
+    @Override
     public void doLayout() {
-        place(headerLabel,      0.24, 0.03,  0.52, 0.14);
-        place(questionLabel,    0.14, 0.23,  0.72, 0.20);
-        place(answerButtons[0], 0.13, 0.455, 0.36, 0.123);
-        place(answerButtons[1], 0.51, 0.455, 0.36, 0.123);
-        place(answerButtons[2], 0.13, 0.587, 0.36, 0.126);
-        place(answerButtons[3], 0.51, 0.587, 0.36, 0.126);
-        place(continueButton,   0.345, 0.73, 0.31, 0.114);
+
+        // Top title ribbon
+        place(headerLabel,
+            0.24, 0.03, 0.52, 0.14);
+
+        // Cream question panel
+        // Narrower area prevents text overflow
+        place(questionText,
+            0.18, 0.265, 0.64, 0.14);
+
+        // Four colorful answer buttons
+        place(answerButtons[0],
+            0.13, 0.455, 0.36, 0.123);
+
+        place(answerButtons[1],
+            0.51, 0.455, 0.36, 0.123);
+
+        place(answerButtons[2],
+            0.13, 0.587, 0.36, 0.126);
+
+        place(answerButtons[3],
+            0.51, 0.587, 0.36, 0.126);
+
+        // Green Continue button
+        place(continueButton,
+            0.345, 0.73, 0.31, 0.114);
     }
 
-    private void place(JComponent c, double x, double y, double bw, double bh) {
+    private void place(
+        JComponent c,
+        double x,
+        double y,
+        double bw,
+        double bh
+    ) {
         int w = getWidth();
         int h = getHeight();
-        c.setBounds((int) (x * w), (int) (y * h), (int) (bw * w), (int) (bh * h));
+
+        c.setBounds(
+            (int) (x * w),
+            (int) (y * h),
+            (int) (bw * w),
+            (int) (bh * h)
+        );
     }
 }
