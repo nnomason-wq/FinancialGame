@@ -26,5 +26,6 @@ public class HotspotButton extends JButton {
             g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30);
         }
         g2.dispose();
+                super.paintComponent(g); // draws the button's text (if any) on top of the glow
     }
 }

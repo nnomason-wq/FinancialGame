@@ -17,8 +17,8 @@ public class Main {
 
         screens.add(new MenuPanel(), "menu");
         screens.add(new TopicPanel(), "topics");
-        screens.add(new TaxesLessonPanel(), "taxes");
-        screens.add(new PlaceholderPanel("Debt"), "debt");
+        screens.add(new LessonPanel(LessonContent.TAX_TITLES, LessonContent.TAX_TEXTS, "topics"), "taxes");
+        screens.add(new LessonPanel(LessonContent.DEBT_TITLES, LessonContent.DEBT_TEXTS, "topics"), "debt");
 
         frame.add(screens);
         frame.setVisible(true);
